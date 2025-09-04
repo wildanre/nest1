@@ -26,16 +26,16 @@ export class User {
   @Column({ default: false })
   isEmailVerified: boolean;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   emailVerificationToken: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'timestamp' })
   emailVerificationExpires: Date | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   passwordResetToken: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'timestamp' })
   passwordResetExpires: Date | null;
 
   @Column({ default: true })

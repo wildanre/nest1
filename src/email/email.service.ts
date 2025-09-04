@@ -21,31 +21,30 @@ export class EmailService {
     });
   }
 
-  async sendVerificationEmail(email: string, token: string): Promise<void> {
-    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${token}`;
-    
+  async sendVerificationEmail(email: string, code: string): Promise<void> {
     const mailOptions = {
       from: process.env.FROM_EMAIL || 'noreply@yourapp.com',
       to: email,
-      subject: 'Verify Your Email Address',
+      subject: 'Email Verification Code',
       html: `
         <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
           <h2 style="color: #333; text-align: center;">Email Verification</h2>
-          <p>Thank you for registering with our application. Please click the button below to verify your email address:</p>
+          <p>Thank you for registering with our application. Please use the verification code below to verify your email address:</p>
+          
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${verificationUrl}" 
-               style="background-color: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
-              Verify Email
-            </a>
+            <div style="background-color: #f8f9fa; border: 2px dashed #007bff; border-radius: 10px; padding: 20px; display: inline-block;">
+              <span style="font-size: 32px; font-weight: bold; color: #007bff; letter-spacing: 5px;">
+                ${code}
+              </span>
+            </div>
           </div>
-          <p style="color: #666; font-size: 14px;">
-            If the button doesn't work, you can copy and paste the following link into your browser:
+          
+          <p style="text-align: center; color: #666; font-size: 16px;">
+            Enter this code in the verification form to complete your registration.
           </p>
-          <p style="word-break: break-all; color: #007bff;">
-            ${verificationUrl}
-          </p>
-          <p style="color: #666; font-size: 12px; margin-top: 30px;">
-            This link will expire in 24 hours. If you didn't request this verification, please ignore this email.
+          
+          <p style="color: #666; font-size: 12px; margin-top: 30px; text-align: center;">
+            This code will expire in 24 hours. If you didn't request this verification, please ignore this email.
           </p>
         </div>
       `,
@@ -53,38 +52,37 @@ export class EmailService {
 
     try {
       await this.transporter.sendMail(mailOptions);
-      this.logger.log(`Verification email sent to ${email}`);
+      this.logger.log(`Verification code sent to ${email}`);
     } catch (error) {
-      this.logger.error(`Failed to send verification email to ${email}:`, error);
+      this.logger.error(`Failed to send verification code to ${email}:`, error);
       throw new Error('Failed to send verification email');
     }
   }
 
-  async sendPasswordResetEmail(email: string, token: string): Promise<void> {
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
-    
+  async sendPasswordResetEmail(email: string, code: string): Promise<void> {
     const mailOptions = {
       from: process.env.FROM_EMAIL || 'noreply@yourapp.com',
       to: email,
-      subject: 'Password Reset Request',
+      subject: 'Password Reset Code',
       html: `
         <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
           <h2 style="color: #333; text-align: center;">Password Reset</h2>
-          <p>You have requested to reset your password. Please click the button below to reset your password:</p>
+          <p>You have requested to reset your password. Please use the code below to reset your password:</p>
+          
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${resetUrl}" 
-               style="background-color: #dc3545; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
-              Reset Password
-            </a>
+            <div style="background-color: #f8f9fa; border: 2px dashed #dc3545; border-radius: 10px; padding: 20px; display: inline-block;">
+              <span style="font-size: 32px; font-weight: bold; color: #dc3545; letter-spacing: 5px;">
+                ${code}
+              </span>
+            </div>
           </div>
-          <p style="color: #666; font-size: 14px;">
-            If the button doesn't work, you can copy and paste the following link into your browser:
+          
+          <p style="text-align: center; color: #666; font-size: 16px;">
+            Enter this code in the password reset form to create a new password.
           </p>
-          <p style="word-break: break-all; color: #dc3545;">
-            ${resetUrl}
-          </p>
-          <p style="color: #666; font-size: 12px; margin-top: 30px;">
-            This link will expire in 1 hour. If you didn't request this reset, please ignore this email.
+          
+          <p style="color: #666; font-size: 12px; margin-top: 30px; text-align: center;">
+            This code will expire in 1 hour. If you didn't request this reset, please ignore this email.
           </p>
         </div>
       `,
@@ -92,9 +90,9 @@ export class EmailService {
 
     try {
       await this.transporter.sendMail(mailOptions);
-      this.logger.log(`Password reset email sent to ${email}`);
+      this.logger.log(`Password reset code sent to ${email}`);
     } catch (error) {
-      this.logger.error(`Failed to send password reset email to ${email}:`, error);
+      this.logger.error(`Failed to send password reset code to ${email}:`, error);
       throw new Error('Failed to send password reset email');
     }
   }

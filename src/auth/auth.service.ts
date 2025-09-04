@@ -16,16 +16,16 @@ export class AuthService {
   async register(registerDto: RegisterDto): Promise<{ message: string; user: Partial<User> }> {
     const user = await this.usersService.create(registerDto);
     
-    // Send verification email
-    if (user.emailVerificationToken) {
-      await this.emailService.sendVerificationEmail(user.email, user.emailVerificationToken);
+    // Send verification email with 6-digit code
+    if (user.emailVerificationCode) {
+      await this.emailService.sendVerificationEmail(user.email, user.emailVerificationCode);
     }
 
     // Return user without sensitive data
-    const { password, emailVerificationToken, passwordResetToken, ...userResponse } = user;
+    const { password, emailVerificationCode, passwordResetCode, ...userResponse } = user;
     
     return {
-      message: 'Registration successful. Please check your email to verify your account.',
+      message: 'Registration successful. Please check your email for verification code.',
       user: userResponse,
     };
   }
@@ -56,7 +56,7 @@ export class AuthService {
     const payload = { email: user.email, sub: user.id };
     
     // Return user without sensitive data
-    const { password, emailVerificationToken, passwordResetToken, ...userResponse } = user;
+    const { password, emailVerificationCode, passwordResetCode, ...userResponse } = user;
     
     return {
       access_token: this.jwtService.sign(payload),
@@ -66,22 +66,22 @@ export class AuthService {
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message: string }> {
     try {
-      const resetToken = await this.usersService.generatePasswordResetToken(forgotPasswordDto.email);
-      await this.emailService.sendPasswordResetEmail(forgotPasswordDto.email, resetToken);
+      const resetCode = await this.usersService.generatePasswordResetToken(forgotPasswordDto.email);
+      await this.emailService.sendPasswordResetEmail(forgotPasswordDto.email, resetCode);
       
       return {
-        message: 'Password reset email sent successfully. Please check your email.',
+        message: 'Password reset code sent successfully. Please check your email.',
       };
     } catch (error) {
       // Don't reveal if email exists or not for security reasons
       return {
-        message: 'If the email exists, a password reset link has been sent.',
+        message: 'If the email exists, a password reset code has been sent.',
       };
     }
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{ message: string }> {
-    await this.usersService.resetPassword(resetPasswordDto.token, resetPasswordDto.newPassword);
+    await this.usersService.resetPassword(resetPasswordDto.code, resetPasswordDto.newPassword);
     
     return {
       message: 'Password reset successfully. You can now login with your new password.',
@@ -89,7 +89,7 @@ export class AuthService {
   }
 
   async verifyEmail(verifyEmailDto: VerifyEmailDto): Promise<{ message: string }> {
-    await this.usersService.verifyEmail(verifyEmailDto.token);
+    await this.usersService.verifyEmail(verifyEmailDto.code);
     
     return {
       message: 'Email verified successfully. You can now login to your account.',
@@ -98,11 +98,11 @@ export class AuthService {
 
   async resendVerification(resendVerificationDto: ResendVerificationDto): Promise<{ message: string }> {
     try {
-      const newToken = await this.usersService.generateNewVerificationToken(resendVerificationDto.email);
-      await this.emailService.sendVerificationEmail(resendVerificationDto.email, newToken);
+      const newCode = await this.usersService.generateNewVerificationToken(resendVerificationDto.email);
+      await this.emailService.sendVerificationEmail(resendVerificationDto.email, newCode);
       
       return {
-        message: 'Verification email sent successfully. Please check your email.',
+        message: 'Verification code sent successfully. Please check your email.',
       };
     } catch (error) {
       if (error.message === 'User not found') {

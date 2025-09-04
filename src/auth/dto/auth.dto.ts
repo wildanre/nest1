@@ -38,7 +38,7 @@ export class ForgotPasswordDto {
 export class ResetPasswordDto {
   @IsString()
   @IsNotEmpty()
-  token: string;
+  code: string;
 
   @IsString()
   @MinLength(8)
@@ -49,7 +49,7 @@ export class ResetPasswordDto {
 export class VerifyEmailDto {
   @IsString()
   @IsNotEmpty()
-  token: string;
+  code: string;
 }
 
 export class ResendVerificationDto {

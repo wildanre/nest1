@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { User } from '../users/user.entity';
+import { AuditLog } from '../audit/audit-log.entity';
 
 export const databaseConfig = (): TypeOrmModuleOptions => {
   const isProduction = process.env.NODE_ENV === 'production';
@@ -11,7 +12,7 @@ export const databaseConfig = (): TypeOrmModuleOptions => {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    entities: [User],
+    entities: [User, AuditLog],
     synchronize: process.env.DB_SYNC === 'true', // Only true for development
     logging: !isProduction && process.env.DB_LOGGING !== 'false',
     ssl: process.env.DB_SSL === 'true' ? {

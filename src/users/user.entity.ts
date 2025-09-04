@@ -38,6 +38,18 @@ export class User {
   @Column({ nullable: true, type: 'timestamp' })
   passwordResetExpires: Date | null;
 
+  @Column({ nullable: true, type: 'text' })
+  refreshToken: string | null;
+
+  @Column({ nullable: true, type: 'timestamp' })
+  refreshTokenExpires: Date | null;
+
+  @Column({ default: 0 })
+  failedLoginAttempts: number;
+
+  @Column({ nullable: true, type: 'timestamp' })
+  lockedUntil: Date | null;
+
   @Column({ default: true })
   isActive: boolean;
 
